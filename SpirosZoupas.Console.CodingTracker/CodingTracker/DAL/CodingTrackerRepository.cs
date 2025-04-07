@@ -87,7 +87,7 @@ namespace CodingTracker.DAL
                 var goalCount = connection.ExecuteScalar<int>(sql);
 
                 if (goalCount == 0)
-                {
+                {   
 
                 }
             }
