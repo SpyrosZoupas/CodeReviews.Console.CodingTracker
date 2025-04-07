@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Dapper;
 using CodingTracker.Model;
 
@@ -7,7 +6,7 @@ namespace CodingTracker.DAL
 {
     public class CodingTrackerRepository
     {
-        string connectionString = ConfigurationManager.ConnectionStrings["code-tracker"].ConnectionString;
+        string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["code-tracker"].ConnectionString;
         public void CreateTables()
         {
             using (var connection = new SqliteConnection(connectionString))
@@ -81,14 +80,6 @@ namespace CodingTracker.DAL
                     }
 
                     connection.Close();
-                }
-
-                sql = "SELECT COUNT(*) FROM goal";
-                var goalCount = connection.ExecuteScalar<int>(sql);
-
-                if (goalCount == 0)
-                {   
-
                 }
             }
         }
