@@ -1,11 +1,7 @@
 ﻿using System.Configuration;
-using System.Collections.Specialized;
-
 using Microsoft.Data.Sqlite;
 using Dapper;
 using CodingTracker.Model;
-using System.Globalization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CodingTracker.DAL
 {
@@ -48,8 +44,6 @@ namespace CodingTracker.DAL
 
         private void PopulateTablesIfEmpty()
         {
-            var random = new Random();
-
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
@@ -96,7 +90,6 @@ namespace CodingTracker.DAL
                 {
 
                 }
-
             }
         }
 
