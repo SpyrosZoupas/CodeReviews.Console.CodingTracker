@@ -256,7 +256,7 @@ namespace CodingTracker
             }
             else
             {
-                AnsiConsole.MarkupLine($"You have already completed this goal! So far you have done {Math.Abs(hoursLeft)} extra hours.");
+                AnsiConsole.MarkupLine($"[white on green]You have already completed this goal! So far you have done {Math.Abs(hoursLeft)} extra hours.[/]");
             }
         }
 
