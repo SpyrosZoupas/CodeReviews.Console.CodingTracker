@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CodingTracker": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Projects\\CodeReviews.Console.CodingTracker\\SpirosZoupas.Console.CodingTracker\\CodingTracker"
+    }
+  }
+}
