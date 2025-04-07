@@ -1,8 +1,8 @@
 ﻿
 using CodingTracker.DAL;
 using CodingTracker.Model;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Spectre.Console;
+using System.Diagnostics;
 
 namespace CodingTracker
 {
@@ -10,6 +10,8 @@ namespace CodingTracker
     {
         private readonly CodingSessionController _controller;
         private readonly Validation _validation;
+        private CodingSession trackedSession = new CodingSession();
+        private Stopwatch stopwatch = new Stopwatch();
 
         public UserInput(CodingSessionController controller, Validation validaton)
         {
@@ -22,40 +24,61 @@ namespace CodingTracker
             Console.Clear();
             AnsiConsole.MarkupLine("[bold purple on black]Welcome to the Coding Tracker application![/]");
 
-            bool closeApp = false;
-            do
+            while (1 == 1)
             {
                 AnsiConsole.MarkupLine("[bold purple on black]MAIN MENU[/]");
                 AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose a sub menu:[/]");
-                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Coding Sessions[/]");
-                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Goals[/]");
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Exit Application[/]");
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Coding Sessions[/]");
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Goals[/]");
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]3) Track live coding session[/]");
                 string input = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                     .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
                     .AddChoices([
                         "0",
-                        "1"
+                        "1",
+                        "2",
+                        "3"
                     ]));
 
-                if (input == "0")
+                switch (input)
                 {
-                    AnsiConsole.MarkupLine("[bold purple on black]CODING SESSION MENU[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose an action:[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Close Application[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Create Coding Session[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Delete Coding Session[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]3) Update Coding Session[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]4) Get a specific Coding Session[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]5) Get all Coding Sessions[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]6) Get all Coding Sessions for a specific period[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]7) Get total duration of Coding Sessions for a specific period[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]8) Get average duration of Coding Sessions for a specific period[/]");
+                    case "0":
+                        Environment.Exit(0);
+                        break;
+                    case "1":
+                        GetCodingSessionMenu();
+                        break;
+                    case "2":
+                        GetGoalMenu();
+                        break;
+                    case "3":
+                        GetLiveTrackingMenu();
+                        break;
+                }
+            }
+        }
 
-                    input = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                        .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
-                        .AddChoices([
-                            "0",
+        private void GetCodingSessionMenu()
+        {
+            AnsiConsole.MarkupLine("[bold purple on black]CODING SESSION MENU[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose an action:[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Back to Main Menu[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Create Coding Session[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Delete Coding Session[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]3) Update Coding Session[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]4) Get a specific Coding Session[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]5) Get all Coding Sessions[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]6) Get all Coding Sessions for a specific period[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]7) Get total duration of Coding Sessions for a specific period[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]8) Get average duration of Coding Sessions for a specific period[/]");
+
+            string input = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
+                .AddChoices([
+                    "0",
                         "1",
                         "2",
                         "3",
@@ -64,104 +87,142 @@ namespace CodingTracker
                         "6",
                         "7",
                         "8"
-                        ]));
+                ]));
 
-                    switch (input)
-                    {
-                        case "0":
-                            AnsiConsole.MarkupLine("[red on black]Bye![/]");
-                            closeApp = true;
-                            Environment.Exit(0);
-                            break;
-                        case "1":
-                            CreateCodingSession();
-                            break;
-                        case "2":
-                            DeleteCodingSession();
-                            break;
-                        case "3":
-                            UpdateCodingSession();
-                            break;
-                        case "4":
-                            GetCodingSessionById();
-                            break;
-                        case "5":
-                            GetAllCodingSessions();
-                            break;
-                        case "6":
-                            GetAllCodingSessionsByDateRange();
-                            break;
-                        case "7":
-                            GetTotalDurationByDateRange();
-                            break;
-                        case "8":
-                            GetAverageDurationByDateRange();
-                            break;
-                        default:
-                            Console.WriteLine("Invalid command!");
-                            break;
-                    }
-                }
-                else
-                {
-                    AnsiConsole.MarkupLine("[bold purple on black]GOAL MENU[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose an action:[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Close Application[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Create Goal[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Delete Goal[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]3) Update Goal[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]4) Get a specific Goal[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]5) Get all Goals[/]");
-                    AnsiConsole.MarkupLine("[italic hotpink3_1 on black]6) Find out how many hours do you need to complete a goal.[/]");
+            switch (input)
+            {
+                case "0":
+                    break;
+                case "1":
+                    CreateCodingSession();
+                    break;
+                case "2":
+                    DeleteCodingSession();
+                    break;
+                case "3":
+                    UpdateCodingSession();
+                    break;
+                case "4":
+                    GetCodingSessionById();
+                    break;
+                case "5":
+                    GetAllCodingSessions();
+                    break;
+                case "6":
+                    GetAllCodingSessionsByDateRange();
+                    break;
+                case "7":
+                    GetTotalDurationByDateRange();
+                    break;
+                case "8":
+                    GetAverageDurationByDateRange();
+                    break;
+                default:
+                    Console.WriteLine("Invalid command!");
+                    break;
+            }
+        }
 
-                    input = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                        .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
-                        .AddChoices([
-                            "0",
+        private void GetGoalMenu()
+        {
+            AnsiConsole.MarkupLine("[bold purple on black]GOAL MENU[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose an action:[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Back to Main Menu[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Create Goal[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Delete Goal[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]3) Update Goal[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]4) Get a specific Goal[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]5) Get all Goals[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]6) Find out how many hours do you need to complete a goal.[/]");
+
+            string input = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
+                .AddChoices([
+                    "0",
                         "1",
                         "2",
                         "3",
                         "4",
                         "5",
                         "6"
-                        ]));
+                ]));
 
-                    switch (input)
-                    {
-                        case "0":
-                            AnsiConsole.MarkupLine("[red on black]Bye![/]");
-                            closeApp = true;
-                            Environment.Exit(0);
-                            break;
-                        case "1":
-                            CreateGoal();
-                            break;
-                        case "2":
-                            DeleteGoal();
-                            break;
-                        case "3":
-                            UpdateGoal();
-                            break;
-                        case "4":
-                            GetGoalById();
-                            break;
-                        case "5":
-                            GetAllGoals();
-                            break;
-                        case "6":
-                            GetHoursLeftForGoalCompletion();
-                            break;
-                        default:
-                            Console.WriteLine("Invalid command!");
-                            break;
-                    }
-                }
-            } while (closeApp == false);
+            switch (input)
+            {
+                case "0":
+                    break;
+                case "1":
+                    CreateGoal();
+                    break;
+                case "2":
+                    DeleteGoal();
+                    break;
+                case "3":
+                    UpdateGoal();
+                    break;
+                case "4":
+                    GetGoalById();
+                    break;
+                case "5":
+                    GetAllGoals();
+                    break;
+                case "6":
+                    GetHoursLeftForGoalCompletion();
+                    break;
+                default:
+                    Console.WriteLine("Invalid command!");
+                    break;
+            }
         }
 
-        // Should I merge XCodingSession / XGoal methods into one and just have a string sessionOrGoal parameter and use that to check with
-        // ifs whether I should do this or the other?
+        private void GetLiveTrackingMenu()
+        {
+            AnsiConsole.MarkupLine("[bold purple on black]LIVE TRACKING MENU[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]Please choose an action:[/]");
+            AnsiConsole.MarkupLine("[italic hotpink3_1 on black]0) Back to Main Menu[/]");
+            if (!stopwatch.IsRunning)
+            {
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Track a coding session[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]1) Check how much time has passed since starting the session.[/]");
+                AnsiConsole.MarkupLine("[italic hotpink3_1 on black]2) Stop tracking your session[/]");
+            }
+
+            string input = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                    .Title("[italic hotpink3_1 on black]Please type one of the following values only:[/]")
+                    .AddChoices(stopwatch.IsRunning ? 
+                    [
+                        "0",
+                        "1",
+                        "2"
+                    ] : 
+                    [
+                        "0",
+                        "1"
+                    ]));
+
+            switch (input)
+            {
+                case "0":
+                    break; 
+                case "1":
+                    if (!stopwatch.IsRunning) TrackSession();
+                    else GetTimePassedWhileTrackingSession();
+                        break;
+                case "2":
+                    if (stopwatch.IsRunning) StopTrackingSession();
+                    else Console.WriteLine("Invalid command!");
+                        break;
+                default:
+                    Console.WriteLine("Invalid command!");
+                    break;
+            }
+        }
+
         private void GetHoursLeftForGoalCompletion()
         {
             AnsiConsole.MarkupLine("[darkcyan]Please enter the ID of the goal you would like to check.[/]");
@@ -177,9 +238,9 @@ namespace CodingTracker
             double hoursLeft = _controller.GetHoursLeftForGoalCompletion(goal);
             if (hoursLeft > 0)
             {
-                AnsiConsole.MarkupLine($"[purple_1]You have to do {hoursLeft} hours until you complete the goal with ID of {goal.Id}[/]");
+                AnsiConsole.MarkupLine($"[purple_1]You have to do {hoursLeft:0.##} hours until you complete the goal with ID of {goal.Id}[/]");
                 double daysRemaining = (goal.EndDateTime - DateTime.Now).TotalDays;
-                if (daysRemaining > 0) AnsiConsole.MarkupLine($"[yellow3_1]You have to do {hoursLeft / (goal.EndDateTime - DateTime.Now).TotalDays:0.###} hours per day if you would like to complete this goal on time.[/]");
+                if (daysRemaining > 0) AnsiConsole.MarkupLine($"[yellow3_1]You have to do {hoursLeft / (goal.EndDateTime - DateTime.Now).TotalDays:0.##} hours per day if you would like to complete this goal on time.[/]");
                 else AnsiConsole.MarkupLine($"[bold black on darkred_1] But you were too late, the end date of this goal has long since passed... You will never be able to complete it.[/]");            
             }
             else
@@ -254,7 +315,6 @@ namespace CodingTracker
                 AnsiConsole.MarkupLine("[white on red]Something went wrong, unable to update coding session.[/]");
         }
 
-
         private void UpdateGoal()
         {
             AnsiConsole.MarkupLine("[darkcyan]Please enter the ID of the goal you would like to update[/]");
@@ -305,7 +365,7 @@ namespace CodingTracker
             {
                 foreach (CodingSession c in codingSessions)
                 {
-                    AnsiConsole.MarkupLine($"[springgreen2]ID: {c.Id} - You had a coding session of {c.Duration} hours from {c.StartDateTime} to {c.EndDateTime}[/]");
+                    AnsiConsole.MarkupLine($"[springgreen2]ID: {c.Id} - You had a coding session of {c.Duration:0.##} hours from {c.StartDateTime} to {c.EndDateTime}[/]");
                 }
             }
             else
@@ -437,6 +497,26 @@ namespace CodingTracker
             double duration = _controller.GetAverageDurationByDateRange(filterType, inputDate);
 
             AnsiConsole.MarkupLine($"[white on green]You have spent an average of {duration} hours in coding sessions between the selected date range.[/]");
+        }
+
+        private void TrackSession()
+        {
+            stopwatch.Start();
+            trackedSession.StartDateTime = DateTime.Now;
+            AnsiConsole.MarkupLine($"[white on green]Coding session is now being tracked, started at {trackedSession.StartDateTime}[/]");
+        }
+
+        private void StopTrackingSession()
+        {
+            trackedSession.EndDateTime = DateTime.Now;
+            AnsiConsole.MarkupLine($"[white on green]Coding session finished at {trackedSession.EndDateTime}. You did a total of {stopwatch.Elapsed.TotalHours:0.##} hours during this session.[/]");
+            _controller.CreateCodingSession(trackedSession.StartDateTime, trackedSession.EndDateTime);
+            stopwatch.Reset();
+        }
+
+        private void GetTimePassedWhileTrackingSession()
+        {
+            AnsiConsole.MarkupLine($"[springgreen2]You have done {stopwatch.Elapsed.TotalHours:0.##} hours so far.[/]");
         }
     }
 }
