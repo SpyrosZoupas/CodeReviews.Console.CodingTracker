@@ -106,7 +106,7 @@ namespace CodingTracker.DAL
             return codingSessions;
         }
 
-        public int GetTotalDurationByDateRange(string filterType, DateTime baseDate)
+        public double GetTotalDurationByDateRange(string filterType, DateTime baseDate)
         {
             DateTime start;
             DateTime end;
@@ -130,7 +130,7 @@ namespace CodingTracker.DAL
             }
 
 
-            int duration = _codingTrackerRepository.GetTotalDurationByDateRange(start, end);
+            double duration = _codingTrackerRepository.GetTotalDurationByDateRange(start, end);
 
             return duration;
         }

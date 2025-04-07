@@ -474,9 +474,9 @@ namespace CodingTracker
                 inputDate = new DateTime(year, 1, 1, 0, 0, 0);
             }
 
-            int duration = _controller.GetTotalDurationByDateRange(filterType, inputDate);
+            double duration = _controller.GetTotalDurationByDateRange(filterType, inputDate);
 
-            AnsiConsole.MarkupLine($"[white on green]You have spent a total of {duration} hours in coding sessions between the selected date range.[/]");
+            AnsiConsole.MarkupLine($"[white on green]You have spent a total of {duration:0.##} hours in coding sessions between the selected date range.[/]");
         }
 
         private void GetAverageDurationByDateRange()
@@ -507,7 +507,7 @@ namespace CodingTracker
 
             double duration = _controller.GetAverageDurationByDateRange(filterType, inputDate);
 
-            AnsiConsole.MarkupLine($"[white on green]You have spent an average of {duration} hours in coding sessions between the selected date range.[/]");
+            AnsiConsole.MarkupLine($"[white on green]You have spent an average of {duration:0.###} hours in coding sessions between the selected date range.[/]");
         }
 
         private void TrackSession()

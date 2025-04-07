@@ -214,9 +214,9 @@ namespace CodingTracker.DAL
              return codingSessions;
         }
 
-        public int GetTotalDurationByDateRange(DateTime start, DateTime end)
+        public double GetTotalDurationByDateRange(DateTime start, DateTime end)
         {
-            int durationSum;
+            double durationSum;
             string sql = $@"
                 SELECT 
                     SUM(Duration)
@@ -228,7 +228,7 @@ namespace CodingTracker.DAL
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
-                durationSum = connection.ExecuteScalar<int>(sql, new { Start = start, End = end });
+                durationSum = connection.ExecuteScalar<double>(sql, new { Start = start, End = end });
                 connection.Close();
             }
 
