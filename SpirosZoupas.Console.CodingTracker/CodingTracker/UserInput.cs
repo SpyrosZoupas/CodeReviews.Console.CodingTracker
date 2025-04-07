@@ -240,8 +240,19 @@ namespace CodingTracker
             {
                 AnsiConsole.MarkupLine($"[purple_1]You have to do {hoursLeft:0.##} hours until you complete the goal with ID of {goal.Id}[/]");
                 double daysRemaining = (goal.EndDateTime - DateTime.Now).TotalDays;
-                if (daysRemaining > 0) AnsiConsole.MarkupLine($"[yellow3_1]You have to do {hoursLeft / (goal.EndDateTime - DateTime.Now).TotalDays:0.##} hours per day if you would like to complete this goal on time.[/]");
-                else AnsiConsole.MarkupLine($"[bold black on darkred_1] But you were too late, the end date of this goal has long since passed... You will never be able to complete it.[/]");            
+                if (daysRemaining > 0)
+                {
+                    AnsiConsole.MarkupLine($"[yellow3_1]You have to do {hoursLeft / (goal.EndDateTime - DateTime.Now).TotalDays:0.##} hours per day if you would like to complete this goal on time.[/]");
+                    AnsiConsole.Write(new BreakdownChart()
+                        .ShowPercentage()
+                        .Width(60)
+                        .AddItem("Hours spent so far", Math.Round((goal.TargetDuration - hoursLeft) / goal.TargetDuration * 100, 2), Color.CornflowerBlue)
+                        .AddItem("Hours left to complete goal", Math.Round(hoursLeft / goal.TargetDuration * 100, 2), Color.OrangeRed1));
+                }
+                else
+                {
+                    AnsiConsole.MarkupLine($"[bold black on darkred_1] But you were too late, the end date of this goal has long since passed... You will never be able to complete it.[/]");
+                }
             }
             else
             {
